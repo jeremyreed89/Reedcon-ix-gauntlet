@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReedCon IX — The King's Gauntlet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-dim: #8A6A20;
+    --crimson: #8B1A1A;
+    --crimson-deep: #5A0A0A;
+    --parchment: #1A1008;
+    --bg: #0D0805;
+    --text: #E8D5A3;
+    --text-dim: #9A8060;
+    --correct: #2A6B2A;
+    --correct-light: #5DBF5D;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'EB Garamond', serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(160deg, #110a06 0%, #0d0805 50%, #0a0608 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Corner ornaments */
+  .corner {
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .corner svg { width: 100%; height: 100%; }
+  .corner.tl { top: 0; left: 0; }
+  .corner.tr { top: 0; right: 0; transform: scaleX(-1); }
+  .corner.bl { bottom: 0; left: 0; transform: scaleY(-1); }
+  .corner.br { bottom: 0; right: 0; transform: scale(-1); }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 680px;
+    padding: 20px;
+  }
+
+  /* ── SCREEN: INTRO ── */
+  #screen-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 1.2s ease both;
+  }
+
+  .crown-svg {
+    width: 100px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
+    animation: crownFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes crownFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .title-rc {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(11px, 3vw, 14px);
+    letter-spacing: 0.4em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .title-main {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 8vw, 52px);
+    color: var(--gold-light);
+    text-shadow: 0 0 40px rgba(201,168,76,0.4), 0 2px 4px rgba(0,0,0,0.8);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(13px, 3.5vw, 18px);
+    color: var(--gold-dim);
+    letter-spacing: 0.25em;
+    margin-bottom: 32px;
+  }
+
+  .divider {
+    width: 100%;
+    max-width: 400px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    margin: 24px auto;
+    position: relative;
+  }
+  .divider::before {
+    content: '✦';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    padding: 0 10px;
+    color: var(--gold-dim);
+    font-size: 12px;
+  }
+
+  .intro-text {
+    font-size: clamp(15px, 3vw, 18px);
+    line-height: 1.7;
+    color: var(--text-dim);
+    max-width: 520px;
+    font-style: italic;
+    margin-bottom: 36px;
+  }
+
+  .intro-text strong {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  .name-label {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  input[type="text"] {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid var(--gold-dim);
+    border-radius: 2px;
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    padding: 14px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    margin-bottom: 24px;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.1);
+  }
+
+  .btn {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 14px 40px;
+    border: 1px solid var(--gold);
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+    color: var(--gold-light);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(201,168,76,0.1));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn:hover::before { opacity: 1; }
+  .btn:hover { box-shadow: 0 0 30px rgba(201,168,76,0.25); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  /* ── SCREEN: GAME ── */
+  #screen-game {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .player-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .player-name span {
+    color: var(--gold);
+  }
+
+  .score-display {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--gold-dim);
+  }
+
+  .score-display span {
+    color: var(--gold-light);
+    font-size: 20px;
+  }
+
+  .question-card {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(201,168,76,0.05), rgba(139,26,26,0.05));
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 40px;
+    position: relative;
+    margin-bottom: 28px;
+    animation: cardReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .question-card::before,
+  .question-card::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--gold-dim);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .question-card::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+  .question-card::after { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+  .question-number {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .question-text {
+    font-size: clamp(18px, 4vw, 24px);
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  .answer-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .answer-area input {
+    max-width: 100%;
+    margin-bottom: 0;
+  }
+
+  /* Shake animation */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-8px); }
+    30% { transform: translateX(8px); }
+    45% { transform: translateX(-6px); }
+    60% { transform: translateX(6px); }
+    75% { transform: translateX(-3px); }
+    90% { transform: translateX(3px); }
+  }
+
+  .shake { animation: shake 0.5s ease both; }
+
+  /* Wrong message */
+  .wrong-msg {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--crimson);
+    text-align: center;
+    min-height: 24px;
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+  .wrong-msg.visible { opacity: 1; }
+
+  /* Correct flash */
+  @keyframes correctFlash {
+    0% { background: rgba(45,110,45,0.3); }
+    100% { background: linear-gradient(135deg, rgba(201,168,76,0.05), rgba(139,26,26,0.05)); }
+  }
+  .question-card.correct { animation: correctFlash 0.8s ease both; }
+
+  /* ── SCREEN: COMPLETE ── */
+  #screen-complete {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 1s ease both;
+  }
+
+  .complete-crown {
+    width: 80px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 24px rgba(201,168,76,0.7));
+    animation: crownFloat 3s ease-in-out infinite;
+  }
+
+  .complete-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(22px, 6vw, 36px);
+    color: var(--gold-light);
+    text-shadow: 0 0 30px rgba(201,168,76,0.5);
+    margin-bottom: 8px;
+  }
+
+  .complete-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(14px, 3.5vw, 18px);
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 32px;
+  }
+
+  .final-score-box {
+    background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(139,26,26,0.1));
+    border: 1px solid var(--gold-dim);
+    padding: 30px 50px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .final-score-box::before, .final-score-box::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border-color: var(--gold-dim);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .final-score-box::before { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+  .final-score-box::after { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+  .final-score-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .final-score-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 64px;
+    color: var(--gold-light);
+    text-shadow: 0 0 40px rgba(201,168,76,0.5);
+    line-height: 1;
+  }
+
+  .final-score-sub {
+    font-size: 15px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  .complete-flavor {
+    font-size: 17px;
+    font-style: italic;
+    color: var(--text-dim);
+    max-width: 460px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .question-card { padding: 24px 20px; }
+    .final-score-box { padding: 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Corner ornaments -->
+<div class="corner tl">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 10 L10 60 M10 10 L60 10" stroke="#C9A84C" stroke-width="1.5"/>
+    <path d="M10 10 L30 30" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+    <circle cx="10" cy="10" r="3" fill="#C9A84C"/>
+    <path d="M20 10 Q35 25 10 40" stroke="#C9A84C" stroke-width="0.6" opacity="0.4" fill="none"/>
+  </svg>
+</div>
+<div class="corner tr">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 10 L10 60 M10 10 L60 10" stroke="#C9A84C" stroke-width="1.5"/>
+    <circle cx="10" cy="10" r="3" fill="#C9A84C"/>
+  </svg>
+</div>
+<div class="corner bl">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 10 L10 60 M10 10 L60 10" stroke="#C9A84C" stroke-width="1.5"/>
+    <circle cx="10" cy="10" r="3" fill="#C9A84C"/>
+  </svg>
+</div>
+<div class="corner br">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 10 L10 60 M10 10 L60 10" stroke="#C9A84C" stroke-width="1.5"/>
+    <circle cx="10" cy="10" r="3" fill="#C9A84C"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <!-- ── INTRO SCREEN ── -->
+  <div id="screen-intro">
+    <svg class="crown-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 60 L15 20 L35 45 L50 5 L65 45 L85 20 L95 60 Z" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M5 60 L95 60" stroke="#C9A84C" stroke-width="2.5"/>
+      <path d="M5 65 L95 65" stroke="#8A6A20" stroke-width="1"/>
+      <circle cx="50" cy="5" r="4" fill="#C9A84C"/>
+      <circle cx="15" cy="20" r="3" fill="#C9A84C"/>
+      <circle cx="85" cy="20" r="3" fill="#C9A84C"/>
+      <circle cx="5" cy="60" r="2.5" fill="#8A6A20"/>
+      <circle cx="95" cy="60" r="2.5" fill="#8A6A20"/>
+      <circle cx="50" cy="60" r="2.5" fill="#8A6A20"/>
+    </svg>
+
+    <div class="title-rc">ReedCon IX</div>
+    <div class="title-main">The King's<br>Gauntlet</div>
+    <div class="title-sub">Prove Thyself Worthy</div>
+
+    <div class="divider"></div>
+
+    <p class="intro-text">
+      Before thee lies a series of questions of <strong>ascending difficulty</strong>.<br>
+      Each correct answer unlocks the next. Each wrong answer... shall be noted.<br><br>
+      Answer wisely. Answer truly. <strong>How far canst thou go?</strong>
+    </p>
+
+    <label class="name-label" for="playerName">Declare thy name, claimant</label>
+    <input type="text" id="playerName" placeholder="Enter your name" autocomplete="off" maxlength="30">
+
+    <div class="divider" style="margin:16px auto;"></div>
+
+    <label class="name-label" for="resumeCode" style="color:var(--text-dim);">Resume code (optional)</label>
+    <input type="text" id="resumeCode" placeholder="e.g. RYBNJOMHSE" autocomplete="off" maxlength="10"
+      style="font-size:15px; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:24px;">
+    <div class="wrong-msg" id="resume-error" style="margin-bottom:12px;"></div>
+
+    <button class="btn" onclick="startGame()">⚔ Enter the Gauntlet</button>
+  </div>
+
+  <!-- ── GAME SCREEN ── -->
+  <div id="screen-game">
+    <div class="game-header">
+      <div class="player-name">Claimant: <span id="display-name"></span></div>
+      <div class="score-display">Score: <span id="display-score">0</span></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="question-number" id="question-number">Question I</div>
+      <div class="question-text" id="question-text"></div>
+    </div>
+
+    <div class="answer-area">
+      <input type="text" id="answerInput" placeholder="Thy answer..." autocomplete="off"
+        onkeydown="if(event.key==='Enter') checkAnswer()">
+      <div class="wrong-msg" id="wrong-msg"></div>
+      <button class="btn" onclick="checkAnswer()">⚔ Submit Answer</button>
+    </div>
+    <div id="level-code" style="margin-top:20px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.3em; color:var(--gold-dim); text-align:center; opacity:0.7;"></div>
+  </div>
+
+  <!-- ── COMPLETE SCREEN ── -->
+  <div id="screen-complete">
+    <svg class="complete-crown" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 60 L15 20 L35 45 L50 5 L65 45 L85 20 L95 60 Z" fill="rgba(201,168,76,0.2)" stroke="#C9A84C" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M5 60 L95 60" stroke="#C9A84C" stroke-width="2.5"/>
+      <circle cx="50" cy="5" r="4" fill="#F0D080"/>
+      <circle cx="15" cy="20" r="3" fill="#C9A84C"/>
+      <circle cx="85" cy="20" r="3" fill="#C9A84C"/>
+    </svg>
+
+    <div class="complete-title" id="complete-title">The Gauntlet Complete</div>
+    <div class="complete-name" id="complete-name"></div>
+
+    <div class="final-score-box">
+      <div class="final-score-label">Final Score</div>
+      <div class="final-score-num" id="final-score-num">0</div>
+      <div class="final-score-sub" id="final-score-sub"></div>
+    </div>
+
+    <p class="complete-flavor" id="complete-flavor"></p>
+    <button class="btn" onclick="resetGame()">⚔ Play Again</button>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  QUESTIONS — Replace these with your own!
+//  answer: must be EXACT match (case-insensitive)
+//  You can add as many as you want.
+// ══════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    text: "What is the name of the annual Reed brothers gathering that this very Gauntlet was built for?",
+    answer: ["reedcon"],
+    taunt: ["Did you black out at the last one?", "Thou art already losing to thyself.", "The name is literally on the screen, my liege."]
+  },
+  {
+    text: "What is Jeremy's birthday? (xx/xx/xxxx format)",
+    answer: ["01/17/1989"],
+    taunt: ["Thou dost not know thine own brother's birthday?", "The calendar weeps for thee.", "Even the court jester sends a card."]
+  },
+  {
+    text: "What fairy tale character received 3 votes on a poll conducted on 5/18/26?",
+    answer: ["goldilocks"],
+    taunt: ["Too hot. Too cold. And thy answer was wrong.", "The bears know. Thou dost not.", "Check thy Signal, knave."]
+  },
+  {
+    text: "What are words 7 and 8 of the opening sentence in Sherlock Holmes: A Scandal in Bohemia?",
+    answer: ["the woman"],
+    taunt: ["Elementary, dear failure.", "Holmes would be disappointed.", "The game is afoot — and thou art losing it."]
+  },
+  {
+    text: "Who does Joe evolve into?",
+    answer: ["malcolm"],
+    taunt: ["The evolution is real. Thou hast missed it entirely.", "Some transformations cannot be unseen — or in thy case, seen.", "Think harder. Or don't. Malcolm doesn't care."]
+  },
+  {
+    text: "How many times did Kevin scream in Home Alone 1 and 2 combined?",
+    answer: ["9"],
+    taunt: ["Count again. Or don't. The answer won't change.", "Kevin screamed. Thou shouldst too.", "There is a video. Go find it, knave."]
+  },
+  {
+    text: "How many dots are on all of Bill Turner's dice when he loses to Davy Jones?",
+    answer: ["12"],
+    taunt: ["The Dutchman remembers. Thou dost not.", "Bootstrap Bill sacrificed everything. Thou canst not even count.", "Watch the scene again. Carefully this time."]
+  },
+  {
+    text: "What is the only podcast that Jon has said he DOESN'T recommend?",
+    answer: ["hardcore gaming 101"],
+    taunt: ["Jon is disappointed but not surprised.", "Thou hast clearly not been listening.", "The court recorder noted every recommendation. Every. One."]
+  },
+  {
+    text: "How long does Phil Connors punch Bob Wiley? (Answer in xx:xx format)",
+    answer: ["10:01"],
+    taunt: ["The video exists. Find it.", "Phil punched. Bob absorbed. Thou failed.", "Some things must be witnessed to be believed. Go witness."]
+  },
+  {
+    text: "What animal is hiding in the background when Bernard says \"the card\" in the Santa suit?",
+    answer: ["tiger", "a tiger"],
+    taunt: ["Look closer. It was right there.", "The North Pole hides many secrets. This was one of them.", "Bernard noticed. Thou didst not."]
+  },
+  {
+    text: "Who will Ben kill if he finds him?",
+    answer: ["rick groen"],
+    taunt: ["Ben is displeased by thy ignorance.", "This man's days are numbered. As are thy points.", "Thou art not paying attention to the group chat."]
+  },
+  {
+    text: "He would have been late to his own destiny if someone had let him run this errand first. Where was Luke going?",
+    answer: ["tosche station"],
+    taunt: ["But the harvest!", "The Force was strong with him. Common sense was not.", "He really wanted those power converters."]
+  },
+  {
+    text: "Finish this sentence: \"The only way up there is through the clock door, and that opens only on...\"",
+    answer: ["the eve of the carnival"],
+    taunt: ["The clock ticks. Thy memory does not.", "Some doors open once. Thy chance to answer correctly has also passed.", "Go back and watch it again."]
+  },
+  {
+    text: "The Black Dragons don't serve just any king. An honorable king earns them. A cheater simply knows the right call. What is the call?",
+    answer: ["32167"],
+    taunt: ["Did thou really forget the code?", "The Black Dragons are disappointed in thee.", "Some things should be burned into memory. This is one of them."]
+  },
+  {
+    text: "Who did the fairy godmother turn into after going to Azkaban?",
+    answer: ["bellatrix lestrange", "bellatrix"],
+    taunt: ["The meme was right there.", "From bibbidi-bobbidi to the Dark Arts. Thou missed it.", "Azkaban changes a person. Thy score reflects similar damage."]
+  },
+  {
+    text: "Downtown Dallas has a bear that will never hibernate. He's the wrong color and on the wrong continent. Who is responsible?",
+    answer: ["richard orlinsky"],
+    taunt: ["The bear knows. Thou dost not.", "He stands in Dallas still, judging thee.", "Wrong color, wrong continent, wrong answer."]
+  },
+  {
+    text: "How much did Ben pay for Wagyu at HEB in 2025?",
+    answer: ["$11.58", "11.58"],
+    taunt: ["Ben remembers every cent. Thou dost not.", "That Wagyu was worth every penny. Thy answer was not.", "Check the receipt. Thou clearly did not."]
+  },
+  {
+    text: "What was the name of the cafe where Buzz socked Bart?",
+    answer: ["cafe rodeo"],
+    taunt: ["Bart had it coming. Thou still got it wrong.", "The punch was legendary. Thy answer was not.", "Some moments live forever. This answer eludes thee still."]
+  },
+  {
+    text: "How many cells were in Jeremy's submarine game?",
+    answer: ["6000"],
+    taunt: ["Jeremy built it. Thou canst not even remember it.", "The submarines are still out there. Thy score is sinking with them.", "Thou hast failed the architect himself."]
+  },
+  {
+    text: "What was the Question 2 resume code?",
+    answer: ["nmjebhsyro", "NMJEBHSYRO"],
+    taunt: ["It was right there. Every single time.", "The code was displayed. Thou wast not paying attention.", "A true king notices everything. Thou art clearly a peasant."]
+  }
+];
+
+// ══════════════════════════════════════════════
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X',
+               'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
+
+// ── SAVE CODES ──
+// One fixed scramble of BEJMNOSHRY per question level (0-indexed)
+// Generated once: fixed seeds derived from "bejmnoshry"
+const BASE_LETTERS = 'BEJMNOSHRY';
+function makeCode(qIndex) {
+  // Deterministic shuffle using qIndex as seed offset
+  const seed = qIndex + 7; // offset so Q0 isn't trivial
+  let arr = BASE_LETTERS.split('');
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = (i * 31 + seed * 17 + 3) % (i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.join('');
+}
+// Pre-generate all codes at startup
+const CODES = QUESTIONS.map((_, i) => makeCode(i));
+
+let currentQ = 0;
+let score = 0;
+let playerName = '';
+
+function startGame() {
+  const nameInput = document.getElementById('playerName').value.trim();
+  if (!nameInput) {
+    document.getElementById('playerName').classList.add('shake');
+    setTimeout(() => document.getElementById('playerName').classList.remove('shake'), 600);
+    return;
+  }
+  playerName = nameInput;
+
+  // Check for resume code
+  const codeInput = document.getElementById('resumeCode').value.trim().toUpperCase();
+  const resumeErr = document.getElementById('resume-error');
+
+  if (codeInput) {
+    const matchIndex = CODES.indexOf(codeInput);
+    if (matchIndex === -1) {
+      resumeErr.textContent = "That code is not recognized by the Gauntlet. Try again, pretender.";
+      resumeErr.classList.add('visible');
+      document.getElementById('resumeCode').classList.add('shake');
+      setTimeout(() => document.getElementById('resumeCode').classList.remove('shake'), 600);
+      return;
+    }
+    currentQ = matchIndex;
+    score = matchIndex; // credit all prior questions
+  } else {
+    currentQ = 0;
+    score = 0;
+  }
+
+  resumeErr.classList.remove('visible');
+  document.getElementById('display-name').textContent = playerName;
+  document.getElementById('display-score').textContent = score;
+  document.getElementById('screen-intro').style.display = 'none';
+  document.getElementById('screen-game').style.display = 'flex';
+  loadQuestion();
+
+  // Auto-save
+  localStorage.setItem('rc9_name', playerName);
+  localStorage.setItem('rc9_q', currentQ);
+  localStorage.setItem('rc9_score', score);
+}
+
+function loadQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('question-number').textContent = 'Question ' + (ROMAN[currentQ] || (currentQ + 1));
+  document.getElementById('question-text').textContent = q.text;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('wrong-msg').textContent = '';
+  document.getElementById('wrong-msg').classList.remove('visible');
+  document.getElementById('question-card').classList.remove('correct');
+
+  // Show resume code for this level
+  const codeEl = document.getElementById('level-code');
+  if (codeEl) codeEl.textContent = 'Resume code: ' + CODES[currentQ];
+
+  // Auto-save progress
+  localStorage.setItem('rc9_name', playerName);
+  localStorage.setItem('rc9_q', currentQ);
+  localStorage.setItem('rc9_score', score);
+
+  setTimeout(() => document.getElementById('answerInput').focus(), 100);
+  // Re-trigger card animation
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = '';
+}
+
+function checkAnswer() {
+  const input = document.getElementById('answerInput');
+  const userAnswer = input.value.trim().toLowerCase();
+  // answer checked via accepted array below
+
+  const accepted = Array.isArray(QUESTIONS[currentQ].answer)
+    ? QUESTIONS[currentQ].answer.map(a => a.toLowerCase())
+    : [QUESTIONS[currentQ].answer.toLowerCase()];
+  if (accepted.includes(userAnswer)) {
+    // Correct
+    score++;
+    document.getElementById('display-score').textContent = score;
+    document.getElementById('question-card').classList.add('correct');
+    document.getElementById('wrong-msg').classList.remove('visible');
+    input.value = '';
+
+    if (currentQ + 1 >= QUESTIONS.length) {
+      setTimeout(showComplete, 700);
+    } else {
+      currentQ++;
+      setTimeout(loadQuestion, 700);
+    }
+  } else {
+    // Wrong
+    const taunts = QUESTIONS[currentQ].taunt;
+    const msg = taunts[Math.floor(Math.random() * taunts.length)];
+    const wrongEl = document.getElementById('wrong-msg');
+    wrongEl.textContent = msg;
+    wrongEl.classList.remove('visible');
+    void wrongEl.offsetWidth;
+    wrongEl.classList.add('visible');
+
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 600);
+    input.value = '';
+    input.focus();
+  }
+}
+
+function showComplete() {
+  document.getElementById('screen-game').style.display = 'none';
+  document.getElementById('screen-complete').style.display = 'flex';
+  document.getElementById('complete-name').textContent = playerName;
+  document.getElementById('final-score-num').textContent = score;
+  document.getElementById('final-score-sub').textContent =
+    score + ' of ' + QUESTIONS.length + ' questions answered';
+
+  const pct = score / QUESTIONS.length;
+  let title, flavor;
+  if (pct === 1) {
+    title = 'Long Live the King';
+    flavor = `${playerName} hath conquered every question, bent the Gauntlet to their will, and claimed the crown. Report thy score to Jeremy and claim thy reward.`;
+  } else if (pct >= 0.8) {
+    title = 'The Gauntlet Endured';
+    flavor = `${playerName} hath proven themselves worthy of the court. The King takes note.`;
+  } else if (pct >= 0.5) {
+    title = 'A Worthy Effort';
+    flavor = `${playerName} made it further than most would dare — but the crown remains unclaimed.`;
+  } else {
+    title = 'The Gauntlet Wins';
+    flavor = `${playerName} hath been humbled by the Gauntlet. Return when thou art... readier.`;
+  }
+
+  document.getElementById('complete-title').textContent = title;
+  document.getElementById('complete-flavor').textContent = flavor;
+}
+
+function resetGame() {
+  document.getElementById('screen-complete').style.display = 'none';
+  document.getElementById('screen-intro').style.display = 'flex';
+  document.getElementById('playerName').value = '';
+}
+
+// Enter key on name input
+document.getElementById('playerName').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startGame();
+});
+
+// Auto-restore saved progress on page load — no hint shown on homepage
+</script>
+</body>
+</html>
